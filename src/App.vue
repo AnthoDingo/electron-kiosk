@@ -13,30 +13,74 @@
 						>
 							<v-row>
 								<v-col :cols="12" :sm="6">
-									<v-text-field
-										v-model="settings.url"
-										label="URL"
-										hint="URL to load"
-										:rules="[validUrl]"
-										required
-									></v-text-field>
+									<v-banner> URLs </v-banner>
+									<v-row
+										v-for="(uri, k) in settings.urls"
+										:key="k"
+									>
+										<v-col :cols="9">
+											<v-text-field
+												:value="uri"
+												:rules="[validUrl]"
+											></v-text-field>
+										</v-col>
+										<v-col :cols="3">
+											<v-btn
+												icon
+												color="error"
+												@click="removeURI(k)"
+												v-show="showRemoveUri(k)"
+											>
+												➖
+											</v-btn>
+											<v-btn
+												icon
+												color="success"
+												variant="flat"
+												@click="addURI()"
+												v-show="showAddUri(k)"
+											>
+												➕
+											</v-btn>
+										</v-col>
+									</v-row>
 								</v-col>
 
 								<v-col :cols="12" :sm="6">
-									<v-text-field
-										v-model.number="settings.cacheLimit"
-										type="number"
-										label="Cache Limit"
-										hint="When cache reaches this size clear and reload page"
-										persistent-hint
-										suffix="MB"
-										min="1"
-										:rules="[
-											v => !!v || 'Limit is required'
-										]"
-										required
-									>
-									</v-text-field>
+									<v-row>
+										<v-text-field
+											v-model.number="settings.cacheLimit"
+											type="number"
+											label="Cache Limit"
+											hint="When cache reaches this size clear and reload page"
+											persistent-hint
+											suffix="MB"
+											min="1"
+											:rules="[
+												v => !!v || 'Limit is required'
+											]"
+											required
+										>
+										</v-text-field>
+									</v-row>
+									<v-row class="mt-10 mb-5">
+										<v-text-field
+											v-model.number="
+												settings.urlRotation
+											"
+											type="number"
+											label="URL Rotation"
+											hint="When time reaches next page is loaded"
+											persistent-hint
+											suffix="s"
+											min="1"
+											:rules="[
+												v => !!v || 'Limit is required'
+											]"
+											required
+										>
+										</v-text-field>
+									</v-row>
 								</v-col>
 
 								<v-col :cols="12" :sm="3">
@@ -265,6 +309,21 @@ export default {
 		validateDuration(v) {
 			const parsed = parse(v)
 			return this.isNumber(parsed) || 'Invalid duration'
+		},
+		showAddUri(index) {
+			return (
+				index === this.settings.urls.length - 1 &&
+				this.settings.urls.length < 5
+			)
+		},
+		showRemoveUri(index) {
+			return index || (!index && this.settings.urls.length > 1)
+		},
+		addURI() {
+			this.settings.urls.push('')
+		},
+		removeURI(index) {
+			this.settings.urls.splice(index, 1)
 		}
 	},
 	watch: {

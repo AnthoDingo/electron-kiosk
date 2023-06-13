@@ -10,6 +10,13 @@ const store = new Store({
 					type: 'string',
 					default: 'https://www.on-system.net'
 				},
+				urls: {
+					type: 'array',
+					items: {
+						type: 'string',
+						default: 'https://www.on-system.net'
+					}
+				},
 				autoLoad: {
 					type: 'boolean',
 					default: false
@@ -21,6 +28,10 @@ const store = new Store({
 				cacheLimit: {
 					type: 'number',
 					default: 500
+				},
+				urlRotation: {
+					type: 'number',
+					default: 180
 				},
 				autoReload: {
 					type: 'boolean',
@@ -44,13 +55,23 @@ const store = new Store({
 	defaults: {
 		settings: {
 			url: 'https://www.on-system.net',
+			urls: ['https://www.on-system.net'],
 			autoLoad: false,
 			dark: true,
 			cacheLimit: 500,
+			urlRotation: 180,
 			autoReload: false,
 			autoReloadMode: 'every',
 			autoReloadHour: 0, // midnight
 			autoReloadEvery: '1h30m'
+		}
+	},
+	migrations: {
+		// eslint-disable-next-line no-shadow
+		'0.6.0': store => {
+			store.set('urls', [])
+			store.set('urlRotation', 180)
+			store.delete('url')
 		}
 	}
 })
